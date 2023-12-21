@@ -1,0 +1,38 @@
+lxc-create -n test123 -t ubuntu
+sudo lxc-ls -f
+lxc-start -n test123
+lxc-attach -n test123 (входим в оболочку test123)
+"
+antonyo891@Linux:/$ cd /sys/fs/cgroup/
+antonyo891@Linux:/sys/fs/cgroup$ ls
+cgroup.controllers      dev-hugepages.mount  memory.pressure
+cgroup.max.depth        dev-mqueue.mount     memory.reclaim
+cgroup.max.descendants  init.scope           memory.stat
+cgroup.pressure         io.cost.model        misc.capacity
+cgroup.procs            io.cost.qos          proc-sys-fs-binfmt_misc.mount
+cgroup.stat             io.pressure          sys-fs-fuse-connections.mount
+cgroup.subtree_control  io.prio.class        sys-kernel-config.mount
+cgroup.threads          io.stat              sys-kernel-debug.mount
+cpu.pressure            lxc.monitor.test123  sys-kernel-tracing.mount
+cpuset.cpus.effective   lxc.payload.test123  system.slice
+cpuset.mems.effective   lxc.pivot            user.slice
+cpu.stat                memory.numa_stat
+
+"(lxc создал две контрольные группы lxc.monitor.test123 и lxc.payload.test123)
+sudo nano lxc/test123/config 
+добавляем конфинурации:
+lxc.cgroup2.memory.max = 256M
+lxc.start.auto = 1
+# logging
+lxc.log.file = /home/HomeWork02/test123.log
+lxc.log.level = 1
+"
+antonyo891@Linux:/var/lib$ sudo lxc-start -n test123
+antonyo891@Linux:/var/lib$ sudo lxc-attach -n test123
+root@test123:/var/lib# free -m
+"
+выйдя из LXC можно проверить файл memory.max контейнера test123
+/sys/fs/cgroup/lxc.payload.test123/
+antonyo891@Linux:/sys/fs/cgroup/lxc.payload.test123$ cat memory.max 
+268435456
+--------------------
